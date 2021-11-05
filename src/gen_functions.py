@@ -180,17 +180,17 @@ def region_of_interest_list(matrix, roi_center_list, roi_shape_list):
     return roi_list
 
 
-def questao10(matrix, threshold):
+def matrix_thresholding(matrix: np.ndarray, threshold: float) -> np.ndarray:
     """
+    Assigns the value zero for all elements of a matrix smaller than a given
+    threshold and the value one otherwise.
 
     Args:
-        matrix:
-        threshold:
+        matrix: a numpy array with two dimensions
+        threshold: float
 
     Returns:
-
+        A binary matrix with the same dimensions as the input matrix,
+        assigning the value zero for all elements smaller than the threshold and 1 otherwise.
     """
-    def f(x):
-        return 1 if x >= threshold else 0
-
-    return np.vectorize(f)(matrix)
+    return np.vectorize(lambda x: 1 if x >= threshold else 0)(matrix)
