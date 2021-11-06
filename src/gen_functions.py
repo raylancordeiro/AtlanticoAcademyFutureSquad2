@@ -87,16 +87,25 @@ def questao5(string_list):
     return string_count
 
 
-def questao06(string_list, analyzed_string, threshold):
+def string_proximity(string_list, analyzed_string, threshold):
     """
-    
+    Performs a string proximity analysis on a list of strings.
+
     Args:
-        string_list: 
-        analyzed_string: 
+        string_list:
+            A list of strings.
+        analyzed_string:
+            Analyzed string.
         threshold: 
-
+            An integer indicating the analysis distance threshold.
     Returns:
+        A list containing the previous and subsequent items of each instance of the analyzed string, without
+        repetitions, according to the chosen threshold.
 
+        Example:
+            string_list : ['avocado', 'pear', 'grape', 'banana', 'apple' , 'cabbage', 'grape', 'bean', 'rice']
+            analysis string: banana; threshold: 2
+            returns: [ 'pear', 'grape', 'apple' , 'cabbage' ]
     """
     analyzed_string_indexes = []
     for i in range(len(string_list)):
@@ -124,14 +133,16 @@ def questao06(string_list, analyzed_string, threshold):
     return result_list
 
 
-def questao07(input_list):
+def removes_repetitions_from_list(input_list: list) -> list:
     """
+    Creates a list from the input list with no repeated items.
 
     Args:
         input_list:
+            A list with elements of any type.
 
     Returns:
-
+        The input list without repetitions.
     """
     no_repeat_list = input_list.copy()
     no_repeat_list.reverse()

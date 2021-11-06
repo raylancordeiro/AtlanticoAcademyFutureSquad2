@@ -1,4 +1,4 @@
-from src.gen_functions import questao06
+from src.gen_functions import string_proximity
 import argparse
 import math
 
@@ -20,7 +20,7 @@ def main():
     analyzed_string = args['analyzed_string']
     threshold = args['threshold']
 
-    result = questao06(string_list, analyzed_string, threshold)
+    result = string_proximity(string_list, analyzed_string, threshold)
     print('As palavras mais próximas são: ', result)
 
 
