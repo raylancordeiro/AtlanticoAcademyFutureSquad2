@@ -53,8 +53,9 @@ def sort_string_list_by_lenght(string_list, reverse=False):
     return sorted_list
 
 
-def questao4(string_list, string_key):
-    """ Finds the number of elements equal to the string_key in the string_list
+def occurrences(string_list: list[str], string_key: str) -> int:
+    """
+    Finds the number of elements equal to the string_key in the string_list
 
     Args:
         string_list: list of strings
@@ -63,14 +64,10 @@ def questao4(string_list, string_key):
     Returns:
         Number of elements equal to the string_key in the string_list
     """
-    qtd = 0
-    for item in string_list:
-        if item == string_key:
-            qtd += 1
-    return qtd
+    return string_list.count(string_key)
 
 
-def string_list_occurrences(string_list: list[str]) -> dict[str, int]:
+def map_occurrences(string_list: list[str]) -> dict[str, int]:
     """
     Calculates the count of each string in a list of strings.
 

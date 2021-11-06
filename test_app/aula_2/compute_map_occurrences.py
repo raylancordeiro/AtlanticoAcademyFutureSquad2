@@ -1,4 +1,4 @@
-from src.gen_functions import string_list_occurrences
+from src.gen_functions import map_occurrences
 import argparse
 
 
@@ -13,7 +13,7 @@ def main():
 
     string_list = args['string_list']
 
-    result = string_list_occurrences(string_list)
+    result = map_occurrences(string_list)
     print('string_list: {}'.format(string_list))
     print('Result: {}'.format(result))
 
