@@ -1,18 +1,18 @@
 from src.gen_functions import string_proximity
 import argparse
-import math
+
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('-p1', '--string_list',
-                    default=['abacate','pera','uva','banana', 'maça','repolho','uva','feijão','arroz'],
-                    help='lista de string')
+                    default=['abacate', 'arroz', 'pera', 'uva', 'banana', 'maça', 'repolho', 'uva', 'feijão', 'arroz'],
+                    help='A list of strings.')
     ap.add_argument('-p2', '--analyzed_string',
                     default='arroz',
-                    help='palavra que será analisada')
+                    help='Analyzed string.')
     ap.add_argument('-p3', '--threshold',
                     default=3,
-                    help='limiar de distância de análise')
+                    help='An integer indicating the analysis distance threshold.')
 
     args = vars(ap.parse_args())
 
@@ -21,7 +21,9 @@ def main():
     threshold = args['threshold']
 
     result = string_proximity(string_list, analyzed_string, threshold)
-    print('As palavras mais próximas são: ', result)
+    print('String list: {}'.format(string_list))
+    print('analyzed_string = \'{}\'; threshold = {}'.format(analyzed_string, threshold))
+    print('Result of the proximity analysis: ', result)
 
 
 if __name__ == '__main__':

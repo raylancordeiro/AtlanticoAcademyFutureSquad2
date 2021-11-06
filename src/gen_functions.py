@@ -107,11 +107,14 @@ def string_proximity(string_list, analyzed_string, threshold):
             analysis string: banana; threshold: 2
             returns: [ 'pear', 'grape', 'apple' , 'cabbage' ]
     """
+
+    # finds the position of the instances of the analysis string
     analyzed_string_indexes = []
     for i in range(len(string_list)):
         if string_list[i] == analyzed_string:
             analyzed_string_indexes.append(i)
 
+    # finds the position of the strings within the distance threshold
     threshold_indexes = set()
     for i in range(1, threshold + 1):
         for p in analyzed_string_indexes:
@@ -122,9 +125,11 @@ def string_proximity(string_list, analyzed_string, threshold):
             if new_threshold_index <= (len(string_list) - 1):
                 threshold_indexes.add(new_threshold_index)
 
+    # sorts the positions
     threshold_indexes = list(threshold_indexes)
     threshold_indexes.sort()
 
+    # creates a list with the positions found in the previous steps
     result_list = []
     for p in threshold_indexes:
         if string_list[p] not in result_list:
