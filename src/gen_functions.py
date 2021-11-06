@@ -145,34 +145,36 @@ def questao07(input_list):
     return no_repeat_list
 
 
-def region_of_interest(matrix, roi_center, roi_shape):
+def region_of_interest(matrix: np.ndarray, roi_center: tuple[int, int], roi_shape: tuple[int, int]) -> np.ndarray:
     """
-
-    Args:
-        matrix: matriz numpy
-        roi_center: (x,y)
-        roi_shape: (height, width)
-
-    Returns:
-
-    """
-    x, y = roi_center
-    height, width = roi_shape
-    roi = matrix[x - (width - 1) // 2: 1 + x + (width - 1) // 2, y - (height - 1) // 2: 1 + y + (height - 1) // 2]
-    return roi
-
-
-def region_of_interest_list(matrix, roi_center_list, roi_shape_list):
-    """
+    Creates a region of interest from a 2D numpy.ndarray (ROI)
 
     Args:
         matrix:
-        roi_center_list:
-        roi_shape_list:
+            A numpy.ndarray with two dimensions.
+        roi_center:
+            A tuple of integers containing the coordinates of the center of the region of interest.
+            For example, if the center is in row 3 and column 4, roi_center should get (3,4)
+        roi_shape:
+            A tuple of integers containing the dimensions of the region of interest. The dimensions must be odd.
+            For example, if the region of interest has height 3 and width 5, roi_shape should get (3,5)
 
     Returns:
-
+        An ROI matrix (a cutout of the original matrix).
     """
+
+    # TODO: tratar o caso no qual as dimensões da entrada não são ímpares.
+    # TODO: tratar o caso no qual a ROI extrapola a matriz de entrada.
+
+    roi_center_x, roi_center_y = roi_center
+    roi_height, roi_width = roi_shape
+    roi = matrix[
+          roi_center_x - (roi_width - 1) // 2: 1 + roi_center_x + (roi_width - 1) // 2,
+          roi_center_y - (roi_height - 1) // 2: 1 + roi_center_y + (roi_height - 1) // 2]
+    return roi
+
+
+def region_of_interest_list(matrix: np.ndarray, roi_center_list, roi_shape_list):
     roi_list = []
     for i in range(len(roi_center_list)):
         new_roi = region_of_interest(matrix, roi_center_list[i], roi_shape_list[i])
@@ -186,7 +188,7 @@ def matrix_thresholding(matrix: np.ndarray, threshold: float) -> np.ndarray:
     threshold and the value one otherwise.
 
     Args:
-        matrix: a numpy array with two dimensions
+        matrix: a numpy.ndarray with two dimensions
         threshold: float
 
     Returns:

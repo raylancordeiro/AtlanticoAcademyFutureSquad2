@@ -13,13 +13,13 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('-ma', '--matrix',
                     default=default_matrix,
-                    help='')
+                    help='A numpy.ndarray with two dimensions.')
     ap.add_argument('-rc', '--roi_center',
-                    default=(1, 1),
-                    help='')
+                    default=(2, 1),
+                    help='A tuple of integers containing the coordinates of the center of the region of interest.')
     ap.add_argument('-rs', '--roi_shape',
-                    default=(3, 3),
-                    help='')
+                    default=(3, 5),
+                    help='A tuple of integers containing the dimensions of the region of interest.')
 
     args = vars(ap.parse_args())
 
@@ -28,6 +28,7 @@ def main():
     roi_shape = args['roi_shape']
     result = region_of_interest(matrix, roi_center, roi_shape)
     print('Original matrix:\n{}'.format(matrix))
+    print('roi center: {}, roi shape: {}'.format(roi_center, roi_shape))
     print('ROI matrix:\n{}'.format(result))
 
 
