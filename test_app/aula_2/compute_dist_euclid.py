@@ -6,10 +6,10 @@ import numpy as np
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('-p1', '--point1',
-                    default=np.array([-7, -4]),
+                    default=np.array([0.0, -2.5]),
                     help='first point to calculate the Euclidean distance')
     ap.add_argument('-p2', '--point2',
-                    default=np.array([17, 6.5]),
+                    default=np.array([0.0, 2.5]),
                     help='second point to calculate the Euclidean distance')
 
     args = vars(ap.parse_args())

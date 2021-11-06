@@ -1,8 +1,9 @@
 import numpy as np
 
 
-def dist_euclid(point1, point2):
-    """ Calculates the Euclidean distance of two points in any dimension
+def dist_euclid(point1: np.ndarray, point2: np.ndarray) -> float:
+    """
+    Calculates the Euclidean distance of two points in any dimension
     
     Args:
         point1: a numpy array containing the coordinates of the first point
