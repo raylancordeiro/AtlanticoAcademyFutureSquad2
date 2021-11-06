@@ -15,16 +15,18 @@ def dist_euclid(point1, point2):
     return dist
 
 
-def closest_to_point(points_list, focus_point):
-    """ Calculates which point is closest to the focus point from a list of points
+def closest_to_point(points_list: np.ndarray, focus_point: np.ndarray) -> np.ndarray:
+    """
+    Calculates which point is closest to the focus point from a list of points.
 
     Args:
-        points_list: a numpy array containing the coordinates of the points
-        focus_point: a numpy array containing the coordinate of the focus point
+        points_list: a numpy array containing the coordinates of the points.
+        focus_point: a numpy array containing the coordinate of the focus point.
 
     Returns:
         a numpy array containing the coordinate of the closest point
     """
+
     closest_point_distance = float('inf')
     closest_point = None
     for point in points_list:

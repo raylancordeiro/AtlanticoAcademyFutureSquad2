@@ -17,7 +17,8 @@ def main():
     points_list = args['points_list']
     focus_point = args['focus_point']
     result = closest_to_point(points_list, focus_point)
-    print('The closeset point to {} is: {}'.format(focus_point, result))
+    print('points_list: \n{}'.format(points_list))
+    print('The closest point to {} is: {}'.format(focus_point, result))
 
 
 if __name__ == '__main__':
