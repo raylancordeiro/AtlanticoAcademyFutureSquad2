@@ -71,10 +71,11 @@ def questao4(string_list, string_key):
 
 
 def questao5(string_list):
-    """ Calculates the count of each string in a list of strings
+    """
+    Calculates the count of each string in a list of strings.
 
     Args:
-        string_list: list of strings
+        string_list: list of strings.
 
     Returns:
         A dictionary containing each string with its count
@@ -87,7 +88,7 @@ def questao5(string_list):
     return string_count
 
 
-def string_proximity(string_list, analyzed_string, threshold):
+def string_proximity(string_list: list[str], analyzed_string: str, threshold: int) -> list[str]:
     """
     Performs a string proximity analysis on a list of strings.
 
