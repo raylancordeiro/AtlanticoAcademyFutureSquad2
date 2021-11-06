@@ -174,7 +174,24 @@ def region_of_interest(matrix: np.ndarray, roi_center: tuple[int, int], roi_shap
     return roi
 
 
-def region_of_interest_list(matrix: np.ndarray, roi_center_list, roi_shape_list):
+def region_of_interest_list(matrix: np.ndarray, roi_center_list: list[tuple[int, int]],
+                            roi_shape_list: list[tuple[int, int]]) -> list[np.ndarray]:
+    """
+    Creates multiple ROIs from a matrix.
+
+    Args:
+        matrix:
+            A numpy.ndarray with two dimensions.
+        roi_center_list:
+            A list containing tuples. Each tuple is composed of integers containing the coordinates of the
+            center of each region of interest.
+        roi_shape_list:
+            A list containing tuples. Each tuple is composed of integers containing the dimensions of each
+            region of interest.
+
+    Returns:
+        A list of ROIs.
+    """
     roi_list = []
     for i in range(len(roi_center_list)):
         new_roi = region_of_interest(matrix, roi_center_list[i], roi_shape_list[i])
