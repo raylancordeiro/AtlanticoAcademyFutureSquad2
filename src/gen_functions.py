@@ -70,7 +70,7 @@ def questao4(string_list, string_key):
     return qtd
 
 
-def questao5(string_list):
+def string_list_occurrences(string_list: list[str]) -> dict[str, int]:
     """
     Calculates the count of each string in a list of strings.
 
@@ -78,7 +78,7 @@ def questao5(string_list):
         string_list: list of strings.
 
     Returns:
-        A dictionary containing each string with its count
+        A dictionary containing each string with its count.
     """
     string_count = {}
     for item in string_list:
