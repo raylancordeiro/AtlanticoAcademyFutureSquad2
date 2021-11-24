@@ -1,6 +1,8 @@
 import PyPDF2
 import os
 import re
+import numpy as np
+
 
 def read_pdf_file(file: str) -> str:
     """
@@ -15,13 +17,14 @@ def read_pdf_file(file: str) -> str:
     pdf_file = open(file, 'rb')
     read_pdf = PyPDF2.PdfFileReader(pdf_file)
     number_of_pages = read_pdf.getNumPages()
-    page_content_all= ''
+    page_content_all = ''
     for i in range(number_of_pages):
         page_content = read_pdf.getPage(i).extractText()
         page_content_all += page_content
     return page_content_all
 
-def load_pfds(patch_files: str) -> str:
+
+def load_pfds(patch_files: str) -> list[str]:
     """
         Reads all PDF files that are in the specific directory
 
@@ -29,25 +32,46 @@ def load_pfds(patch_files: str) -> str:
         patch_files: a string with the full path of the directory
 
     Returns:
-        A string with the contents of all pages of all read files
+        A list with the contents of all pages of all read files, being that each list position corresponds to a
+         corpus (document)
     """
     os.chdir(patch_files)
-    file_base_all = ''
+    file_base_all = []
     for file in os.listdir():
         if file.endswith(".pdf"):
-            file_base_all += read_pdf_file(os.path.join(patch_files, file))
+            file_base_all.append(read_pdf_file(os.path.join(patch_files, file)))
     return file_base_all
 
-def join_and_remove_breaks(base: str) -> list[str]:
+
+def join_and_remove_breaks(base: list[str]) -> list[str]:
     """
-        Removes all line breaks and converts content to a string list
+        Removes all line breaks
 
     Args:
-        base: A string with the content of the read files
+        base: A list of string with the content of the read files (copora)
 
     Returns:
-        A list of strings with the content of the read files
+        A list of strings with the content of the read files, being that each list position corresponds to a
+         corpus (document)
      """
-    parsed = re.sub('\n', '', base)
-    parsed = list(parsed.split(" "))
-    return parsed
+    list_parsed = []
+    for i in range(len(base)):
+        list_parsed.append(re.sub('\n', '', base[i]))
+    return list_parsed
+
+
+def calculate_idf(corpora: list[str]) -> np.ndarray:
+    """
+        Calculate the IDF of a corpora
+
+    Args:
+        corpora: A list of string with the content of the read files
+
+    Returns:
+        An array with the IDF of all the words of the corpora
+    """
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    tf = TfidfVectorizer(use_idf=True)
+    tf.fit_transform(corpora)
+    idf = tf.idf_
+    return idf
