@@ -154,8 +154,8 @@ def removes_repetitions_from_list(input_list: list) -> list:
     no_repeat_list = input_list.copy()
     no_repeat_list.reverse()
     i = 0
-    while i < (len(no_repeat_list) - 1):
-        current_item = no_repeat_list[i]
+    while i < (len(input_list) - 1):
+        current_item = input_list[i]
         while no_repeat_list.count(current_item) > 1:
             no_repeat_list.remove(current_item)
         i += 1
@@ -231,3 +231,10 @@ def matrix_thresholding(matrix: np.ndarray, threshold: float) -> np.ndarray:
         assigning the value zero for all elements smaller than the threshold and 1 otherwise.
     """
     return np.vectorize(lambda x: 1 if x >= threshold else 0)(matrix)
+
+
+def concatenate_lists_without_repetitions(*args):
+    concatenated_list = []
+    for arg in args:
+        concatenated_list += arg
+    return removes_repetitions_from_list(concatenated_list)
