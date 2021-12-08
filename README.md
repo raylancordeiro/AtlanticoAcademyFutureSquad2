@@ -1,0 +1,1 @@
+Repositório das atividades do curso de computação cognitiva da Squad2

@@ -41,53 +41,16 @@ def show_nlp_doc(doc):
             print('palavra = {}, lema = {}, id = {}'.format(word.text, word.lemma, word.id))
 
 
-def count_occurrences(doc, method='lemma'):
-    # dicionário de contagem: chave = palavra, valor = ocorrencias
-    count_dict = dict()
-
-    # metodo lemma -> contagem dos lemas
-    if method == 'lemma':
-        for word in doc.iter_words():
-            lemma = word.lemma
-            if lemma in count_dict.keys():
-                count_dict[lemma] += 1
-            else:
-                count_dict[lemma] = 1
-
-    # metodo token -> contagem dos tokens
-    # não agrupa tokens diferentes com lemas iguais
-    elif method == 'token':
-        for token in doc.iter_tokens():
-            text = token.text
-            if text in count_dict.keys():
-                count_dict[text] += 1
-            else:
-                count_dict[text] = 1
-
-    return count_dict
-
-
-def frequency(doc, method='lemma'):
-    # dicionário de frequencia: chave = palavra, valor = frequencia
-    count_dic = dict()
-
-    # metodo lemma -> contagem dos lemas
-    if method == 'lemma':
-        count_dic = count_occurrences(doc, method=method)
-        for lemma in count_dic.keys():
-            count_dic[lemma] = count_dic[lemma] / doc.num_words
-
-    # metodo token -> contagem dos tokens
-    # não agrupa tokens diferentes com lemas iguais
-    elif method == 'token':
-        count_dic = count_occurrences(doc, method=method)
-        for token in count_dic.keys():
-            count_dic[token] = count_dic[token] / doc.num_tokens
-
-    return count_dic
-
-
 def neighborhood_by_sentences(doc, tf_dict, lemma, threshold):
+    """
+    Retorna a lista de vizinhos, com distancia threshold, do lemma passado como parametro
+    considerando somente a sentença em que o lema se encontra
+
+    percorre todas as sentenças e retorna uma lista de vizinhos
+
+    * Não foi usada no trabalho pois utilizou-se a convenção de considerar
+    vizinhos entre sentenças vizinhas
+    """
     neighbors_list = []
     for sentence in doc.sentences:
         sentence_list = []
@@ -107,6 +70,9 @@ def neighborhood_by_sentences(doc, tf_dict, lemma, threshold):
 
 
 def print_sentences(doc):
+    """
+    Imprime as sentenças separadamente
+    """
     for sentence in doc.sentences:
         sentence_list = []
         for word in sentence.words:
@@ -115,6 +81,11 @@ def print_sentences(doc):
 
 
 def stanza_sentence_to_list_of_lemmas(corpus_lematizado_stanza_doc):
+    """
+    Recebe um Document da biblioteca stanza
+
+    Retorna uma lista de lemas, contendo todos os lemas do documento em ordem
+    """
     list_of_list_of_lemmas = []
     for document in corpus_lematizado_stanza_doc:
         document_list = []
@@ -126,6 +97,13 @@ def stanza_sentence_to_list_of_lemmas(corpus_lematizado_stanza_doc):
 
 
 def clean_text(text):
+    """
+    Realiza algumas operações de limpeza em uma string
+    remove numeros
+    remove pontuações
+    substitui maisculas por minusculas
+    remove espaços em branco repetidos
+    """
     # remove numbers
     text_nonum = re.sub(r'\d+', '', text)
     # remove punctuations and convert characters to lower case
@@ -137,6 +115,10 @@ def clean_text(text):
 
 
 def removestopwords(texto):
+    """
+    Utiliza a lista de stopwords em portugues definida pela biblioteca nltk
+    para realizar a remoção de stopwords do texto passado como parametro
+    """
     nltk.download('stopwords')
     stopwords = nltk.corpus.stopwords.words('portuguese')
     frases = []
@@ -146,56 +128,101 @@ def removestopwords(texto):
     return frases
 
 
-def convert_list_to_string(_corpus, seperator=' '):
-    return seperator.join(_corpus)
+def term_frequency(corpus):
+    """
+    Recebe o corpus, formatado como uma lista de documentos, cada documento formatado como uma lista de
+    tokens ou lemas
 
+    Retorna uma lista de dicionários, um para cada documento
+    Cada dicionário contem os lemas presentes no documento como chaves e suas respectivas frequencias
+    como valores
+    """
 
-def calc_tf(ocorrencias_termo, termos_documento):
+    ocorrencias_termo = list(map(gen_functions.map_occurrences, corpus))
+    termos_documento = list(map(len, corpus))
+
     result = {}
     for i in range(len(ocorrencias_termo)):
         result[i] = dict(map(lambda kv: (kv, ocorrencias_termo[i][kv] / termos_documento[i]), ocorrencias_termo[i]))
     return result
 
 
-def document_frequency(corpus_lists):
-    todas_palavras = gen_functions.concatenate_lists_without_repetitions(*corpus_lists)
+def document_frequency(corpus):
+    """
+    Recebe o corpus, formatado como uma lista de documentos, cada documento formatado como uma lista de
+    tokens ou lemas
+
+    Retorna um dicionário com todos os lemas presentes no corpus como chaves
+    cada lema com seu respectivo document frequency como valor
+    """
+    todas_palavras = gen_functions.concatenate_lists_without_repetitions(*corpus)
 
     df = dict.fromkeys(todas_palavras, 0)
 
     for word in todas_palavras:
-        for doc in corpus_lists:
+        for doc in corpus:
             if word in doc:
                 df[word] += 1
 
     return df
 
 
-def calc_idf(corpus):
+def inverse_document_frequency(corpus):
+    """
+    Recebe o corpus, formatado como uma lista de documentos, cada documento formatado como uma lista de
+    tokens ou lemas
+
+    Retorna um dicionário com todos os lemas presentes no corpus como chaves
+    cada lema com seu respectivo inverse document frequency como valor
+    """
     import math
     df = document_frequency(corpus)
     idf = {k: math.log10((len(corpus) / v)) for k, v in df.items()}
+    # a divisão é feita por "v" ao invés de "v+1" pois não há tokens não presentes no corpus
     return idf
 
 
-def calc_tf_idf(corpus):
-    ocorrencias_termo = list(map(gen_functions.map_occurrences, corpus))
-    termos_documento = list(map(len, corpus))
-    tf = calc_tf(ocorrencias_termo, termos_documento)
+def calc_tf_idf(corpus, tf=None, idf=None):
+    """
+    Recebe o corpus, formatado como uma lista de documentos, cada documento formatado como uma lista de
+    tokens ou lemas
 
-    idf = calc_idf(corpus)
+    Retorna uma lista de dicionários, um para cada documento
+    Cada dicionário contem os lemas presentes no documento como chaves e suas respectivas tf-idf
+    como valores
 
-    tf_idf_list = []
+    Os dicionários tf e idf podem ser passados como parametros para evitar recalculos
+    """
+
+    if tf is None:
+        tf = term_frequency(corpus)
+    if idf is None:
+        idf = inverse_document_frequency(corpus)
+
+    list_of_tf_idf_dicts = []
 
     for i in range(len(corpus)):
-        current_tf_idf = tf[i].copy()
-        for word in current_tf_idf.keys():
-            current_tf_idf[word] = tf[i][word] * idf[word]
-        tf_idf_list.append(current_tf_idf)
+        doc_tf_idf_dict = tf[i].copy()
+        for word in doc_tf_idf_dict.keys():
+            doc_tf_idf_dict[word] = tf[i][word] * idf[word]
+        list_of_tf_idf_dicts.append(doc_tf_idf_dict)
 
-    return tf_idf_list
+    return list_of_tf_idf_dicts
 
 
-def calc_palavras_mais_signiticativas(corpus, tf_dicts, df_dict, idf_dict, tf_idf_dicts, n_items=5, n_neighbors=2):
+def calc_termos_maior_tf_idf(corpus, n_words=5, tf_idf_dicts=None):
+    """
+    Recebe o corpus, formatado como uma lista de documentos, cada documento formatado como uma lista de
+    tokens ou lemas
+
+    Retorna uma lista com as palavras de maior tf-idf do corpus
+
+    * Os dicionários de tf-idfs podem ser passados como parametro para evitar recalculos
+    """
+
+    if tf_idf_dicts is None:
+        tf_idf_dicts = calc_tf_idf(corpus)
+
     tf_idf_all_list = []
     for i in range(len(corpus)):
         for word in tf_idf_dicts[i].keys():
@@ -204,11 +231,28 @@ def calc_palavras_mais_signiticativas(corpus, tf_dicts, df_dict, idf_dict, tf_id
     tf_idf_all_list.sort(key=lambda x: x[1], reverse=True)
 
     n_palavras_mais_significativas = []
-    for i in range(n_items):
+    for i in range(n_words):
         n_palavras_mais_significativas.append(tf_idf_all_list[i][0])
 
+    return n_palavras_mais_significativas
+
+
+def terms_neighborhood(corpus, terms, tf_dicts=None, n_neighbors=2):
+    """
+    Recebe o corpus, formatado como uma lista de documentos, cada documento formatado como uma lista de
+    tokens ou lemas
+
+    Recebe termos, uma lista com os tokens para os quais se quer pesquisar os tokens de maior proximidade
+
+    Retorna um dicionário contendo os termos como chaves e os vizinhos, encontrados em todo o corpus, como
+    valores
+    """
+
+    if tf_dicts is None:
+        tf_dicts = term_frequency(corpus)
+
     palavras_mais_significativas_dict = {}
-    for word in n_palavras_mais_significativas:
+    for word in terms:
         full_list_of_neighbors = []
         for i in range(len(corpus)):
             parcial_list_of_neighbors = []
@@ -223,8 +267,14 @@ def calc_palavras_mais_signiticativas(corpus, tf_dicts, df_dict, idf_dict, tf_id
     return palavras_mais_significativas_dict
 
 
-def write_csv_metricas_gerais(corpus, tf_dicts, df_dict, idf_dict, tf_idf_dicts):
-    with open('resultados.csv', mode='w', newline='') as csv_file:
+def write_csv_metricas_gerais(corpus, tf_dicts, df_dict, idf_dict, tf_idf_dicts, output_dir):
+    """
+    Recebe o corpus, formatado como uma lista de documentos, cada documento formatado como uma lista de
+    tokens ou lemas
+
+    Cria o csv contendo as metricas de TF, IDF e TF-IDF para cada token presente no corpus
+    """
+    with open(f'{output_dir}/metricas-gerais.csv', mode='w', newline='') as csv_file:
         fieldnames = ["PALAVRA", "TF-doc1", "TF-doc2", "TF-doc3",
                       "DF", "IDF", "TF-IDF-doc1", "TF-IDF-doc2", "TF-IDF-doc3"]
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
@@ -254,15 +304,17 @@ def write_csv_metricas_gerais(corpus, tf_dicts, df_dict, idf_dict, tf_idf_dicts)
                              "TF-IDF-doc2": str(tf_idf[1]),
                              "TF-IDF-doc3": str(tf_idf[2])
                              })
+    print(f'{output_dir}/metricas-gerais.csv criado com sucesso!')
 
 
-def write_csv_palavras_mais_importantes(palavras_mais_significativas_dict):
-    with open('tokens_de_maior_tf-idf.csv', mode='w', newline='') as csv_file:
+def write_csv_tokens_maior_tf_idf(tokens_maior_tf_idf_dict, output_dir):
+    with open(f'{output_dir}/tokens_maior_tf_idf.csv', mode='w', newline='') as csv_file:
         fieldnames = ["tokens de maiores tf-idf", "lista de prox com tf de cada string"]
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
         writer.writeheader()
 
-        for word in palavras_mais_significativas_dict.keys():
+        for word in tokens_maior_tf_idf_dict.keys():
             writer.writerow({"tokens de maiores tf-idf": str(word),
-                             "lista de prox com tf de cada string": str(palavras_mais_significativas_dict[word]),
+                             "lista de prox com tf de cada string": str(tokens_maior_tf_idf_dict[word]),
                              })
+    print(f'{output_dir}/tokens_maior_tf_idf.csv criado com sucesso!')

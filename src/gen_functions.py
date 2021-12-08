@@ -238,3 +238,10 @@ def concatenate_lists_without_repetitions(*args):
     for arg in args:
         concatenated_list += arg
     return removes_repetitions_from_list(concatenated_list)
+
+
+def convert_list_to_string(_corpus, seperator=' '):
+    """
+    Converte uma lista de strings em uma string unica, separando os itens com um espaço em branco.
+    """
+    return seperator.join(_corpus)
