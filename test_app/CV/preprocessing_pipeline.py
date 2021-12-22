@@ -1,7 +1,20 @@
-from tensorflow.python.keras.utils import np_utils
-from src import computer_vision
-import numpy as np
+"""
+Este pipeline recebe um dataset organizado da seguinte forma:
+
+dataset/
+    amostras_classe_1/
+    amostras_classe_2/
+    ...
+    amostras_classe_n/
+
+Os dados são preprocessados e salvos na pasta CV/preprocessed_data no formato npy,
+separados em dados de treino, teste e validação
+"""
+
 import os
+import numpy as np
+from src import computer_vision
+from tensorflow.python.keras.utils import np_utils
 
 
 def main():

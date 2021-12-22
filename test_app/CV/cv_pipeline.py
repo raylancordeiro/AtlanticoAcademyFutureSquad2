@@ -1,17 +1,19 @@
-from PIL import Image
+"""
+este pipeline utiliza os dados gerados pelo preprocessing_pipeline
+treina a rede neural escolhida e exibe o desempenho alcançado
+"""
+
+import time
 import numpy as np
-import pathlib
-import os
-import matplotlib.pyplot as plt
-import cv2
-from sklearn.model_selection import train_test_split
-from tensorflow.python.keras.utils import np_utils
 from tensorflow import keras
 from src import computer_vision
-import time
 
 # escolher o modelo de rede neural: cnn ou vgg
 MODEL_CHOICE = 'cnn'  # 'cnn' ou 'vgg'
+
+# hiperparametros gerais
+batch_size = 16
+epochs = 5
 
 
 def main():
@@ -26,10 +28,6 @@ def main():
 
     # métricas
     metrics = [keras.metrics.Precision(name="precision"), keras.metrics.Recall(name="recall")]
-
-    # Definindo os parametros gerais para treinamento
-    batch_size = 16
-    epochs = 5
 
     # Criando o modelo e verificando a estrutura
     model = computer_vision.create_model(model_type=MODEL_CHOICE,
