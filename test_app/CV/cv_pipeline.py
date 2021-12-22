@@ -10,6 +10,7 @@ from tensorflow import keras
 from src import computer_vision
 import time
 
+# escolher o modelo de rede neural: cnn ou vgg
 MODEL_CHOICE = 'cnn'  # 'cnn' ou 'vgg'
 
 
