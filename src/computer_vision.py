@@ -1,24 +1,24 @@
-# Imports de bibliotecas para treinamento de redes neurais
-import tensorflow as tf
-from tensorflow.python.keras.utils import np_utils
-from tensorflow.python.keras.layers.convolutional import Conv2D, MaxPooling2D
-from tensorflow.keras.models import *
-from tensorflow.keras.layers import *
-from tensorflow.keras.optimizers import Nadam, Adam, SGD, RMSprop
-from tensorflow.keras.utils import to_categorical
-from tensorflow import keras
-from tensorflow.keras import layers
-from keras.applications.vgg19 import VGG19
-import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
-
-import numpy as np
-import pathlib
 import os
 import cv2
+import pathlib
+import numpy as np
+import matplotlib.pyplot as plt
+from tensorflow.keras.models import *
+from tensorflow.keras.layers import *
+from keras.applications.vgg19 import VGG19
+from sklearn.model_selection import train_test_split
 
 
 def load_dataset(data_dir):
+    """
+    Recebe o path para o conjunto de imagens e retorna uma lista de listas de imagens, separadas por classe,
+    representadas como numpy arrays.
+
+    Retorna também um numpy array contendo o nome das classes.
+
+    :param data_dir: string
+    :return: (list[list[np.array]], np.array)
+    """
     data_dir = pathlib.Path(data_dir)
     class_names = np.array([item.name for item in data_dir.glob('*')])
 
@@ -38,7 +38,14 @@ def load_dataset(data_dir):
     return images, class_names
 
 
-def custom_train_test_split(images, random_state=42):
+def custom_train_test_val_split(images, random_state=42):
+    """
+    Realiza a separação dos dados em treinamento, validação e testes ~ (70/20/10)
+
+    :param images: list[list[np.array]]
+    :param random_state: int
+    :return: (list[list[np.array]], list[list[np.array]], list[list[np.array]])
+    """
     # Criando as listas vazias
     train_images = []
     val_images = []
@@ -48,13 +55,13 @@ def custom_train_test_split(images, random_state=42):
     # Loop percorrendo todas as imagens redimensionadas e preenchendo as listas de treino e validação
     for imgs in images:
         train, test = train_test_split(imgs, train_size=0.9, test_size=0.1,
-                                       random_state=42)
+                                       random_state=random_state)
         aux_images.append(train)
         test_images.append(test)
 
     for imgs2 in aux_images:
         train, val = train_test_split(imgs2, train_size=0.78, test_size=0.22,
-                                      random_state=42)
+                                      random_state=random_state)
         train_images.append(train)
         val_images.append(val)
 
@@ -62,8 +69,14 @@ def custom_train_test_split(images, random_state=42):
 
 
 def create_labels(train_images, val_images, test_images):
-    # Exibindo a quantidade de dados para treinamento e a distribuição de cada classe
+    """
+    Retorna os rótulos de cada conjunto de imagens mapeados em um np.array de inteiros.
 
+    :param train_images: list[list[np.array]]
+    :param val_images: list[list[np.array]]
+    :param test_images: list[list[np.array]]
+    :return: np.array
+    """
     # tamanhos das classes
     len_train_images = [len(imgs) for imgs in train_images]
     len_val_images = [len(imgs) for imgs in val_images]
@@ -89,6 +102,14 @@ def create_labels(train_images, val_images, test_images):
 
 
 def convert_to_numpy(train_images, val_images, test_images):
+    """
+    Retorna as listas de imagens formatadas em um único np.array
+
+    :param train_images: list[list[np.array]]
+    :param val_images: list[list[np.array]]
+    :param test_images: list[list[np.array]]
+    :return: (np.array, np.array, np.array)
+    """
     # Criando listas temporarias
     tmp_train_imgs = []
     tmp_val_imgs = []
@@ -120,19 +141,40 @@ def convert_to_numpy(train_images, val_images, test_images):
 
 
 def convert_to_rgb(img):
-    # Função para converter as imagens para formato RGB
+    """
+    Recebe uma imagem no formato BGR e a retorna no formato RGB
+
+    :param img: np.array
+    :return: np.array
+    """
     return cv2.cvtColor(img.copy(), cv2.COLOR_BGR2RGB)
 
 
 def create_model(model_type, input_shape, number_of_classes, metrics):
+    """
+    Cria o modelo de rede neural de acordo com os parâmetros.
+
+    :param model_type: str (cnn ou vgg)
+    :param input_shape: (int, int, int)
+    :param number_of_classes: int
+    :param metrics: list (lista contendo os parâmetros de métricas da biblioteca keras)
+    :return: modelo de rede neural da biblioteca keras
+    """
     if model_type == 'cnn':
         return create_model_cnn(input_shape, number_of_classes, metrics)
     elif model_type == 'vgg':
         return create_model_vgg19(input_shape, number_of_classes, metrics)
 
 
-# Função para criar a estrutura de nosso modelo CNN
 def create_model_cnn(input_shape, number_of_classes, metrics):
+    """
+    Cria o modelo de rede neural do tipo cnn de acordo com os parâmetros.
+
+    :param input_shape: (int, int, int)
+    :param number_of_classes: int
+    :param metrics: list (lista contendo os parâmetros de métricas da biblioteca keras)
+    :return: modelo de rede neural do tipo cnn da biblioteca keras
+    """
     model = Sequential()
     model.add(Conv2D(32, (3, 3), padding='same', input_shape=input_shape, activation='relu'))
     model.add(Conv2D(32, (3, 3), activation='relu'))
@@ -164,8 +206,16 @@ def create_model_cnn(input_shape, number_of_classes, metrics):
     return model
 
 
-# Função para criar a estrutura de nosso modelo usando como base o modelo pre-treinado VGG19
 def create_model_vgg19(input_shape, number_of_classes, metrics):
+    """
+    Cria o modelo de rede neural do tipo vgg19 de acordo com os parâmetros.
+
+    :param input_shape: (int, int, int)
+    :param number_of_classes: int
+    :param metrics: list (lista contendo os parâmetros de métricas da biblioteca keras)
+    :return: modelo de rede neural do tipo vgg19 da biblioteca keras
+    """
+
     model = VGG19(weights="imagenet", include_top=False, input_shape=input_shape)
 
     # Congelando as camadas que não serão treinadas
@@ -189,8 +239,13 @@ def create_model_vgg19(input_shape, number_of_classes, metrics):
     return final_model
 
 
-# Função para exibir o desempenho do modelo em treino e teste
 def plot_model(history, epochs):
+    """
+    Exibe os gráficos de treinamento.
+
+    :param history: dict
+    :param epochs: int
+    """
     plt.figure(figsize=(15, 5))
 
     plt.subplot(1, 2, 1)
@@ -213,8 +268,15 @@ def plot_model(history, epochs):
     plt.show()
 
 
-# Função para realizar previsão da classe das imagens passadas como parâmetro
 def predict_val(test_data, model):
+    """
+    Função para realizar previsão da classe das imagens passadas como parâmetro
+    Retorna o rótulo e a probabilidade estimada da previsão
+
+    :param test_data: np.array
+    :param model: modelo de rede neural da biblioteca keras
+    :return: int, float
+    """
     val_input = np.reshape(test_data, (1, 256, 256, 3))
     val_input = val_input / 255.
     pred = model.predict(val_input)
@@ -222,13 +284,25 @@ def predict_val(test_data, model):
     return class_num, np.max(pred)
 
 
-# Função para buscar a descrição do label
 def desc_label(label):
+    """
+    Converte a formatação one-hot-encoding para o inteiro correspondente.
+    :param label: np.array
+    :return: int
+    """
     idx = np.where(label == 1)
     return idx[0][0]
 
 
 def show_predictions(model, test_data, test_labels, class_names):
+    """
+    Exibe alguns exemplos de imagens com os respectivos rótulos e previsões.
+
+    :param model: modelo de rede neural da biblioteca keras
+    :param test_data: np.array
+    :param test_labels: np.array
+    :param class_names: np.array
+    """
     # Realizando as previsões e exibindo as imagens com os labels verdadeiros e previstos
     plt.figure(figsize=(15, 15))
     for i in range(9):
@@ -248,6 +322,13 @@ def show_predictions(model, test_data, test_labels, class_names):
 
 
 def reshape_img_dataset(images, new_shape):
+    """
+    Transforma todas as imagens para a resolução escolhida.
+
+    :param images: list[list[np.array]]
+    :param new_shape: (int, int)
+    :return: list[list[np.array]]
+    """
     img_width, img_height = new_shape
 
     resized_images = []
@@ -256,8 +337,17 @@ def reshape_img_dataset(images, new_shape):
     return resized_images
 
 
-def apply_bilateral_filter(images):
+def apply_bilateral_filter(images, d=15, sigma_color=75, sigma_space=75):
+    """
+    Aplica o processamento de filtro bilateral em todas as imagens.
+
+    :param images: list[list[np.array]]
+    :param d: int
+    :param sigma_color: int
+    :param sigma_space: int
+    :return: list[list[np.array]]
+    """
     filtered_images = []
     for i, imgs in enumerate(images):
-        filtered_images.append([cv2.bilateralFilter(img, 15, 75, 75) for img in imgs])
+        filtered_images.append([cv2.bilateralFilter(img, d, sigma_color, sigma_space) for img in imgs])
     return filtered_images

@@ -36,7 +36,7 @@ def main():
     filtered_images = computer_vision.apply_bilateral_filter(resized_images)
 
     # Realizando o split dos dados para treinamento, validação e testes ~ (70/20/10)
-    train_images, val_images, test_images = computer_vision.custom_train_test_split(filtered_images)
+    train_images, val_images, test_images = computer_vision.custom_train_test_val_split(filtered_images)
 
     # Criando os labels para as imagens de treinamento
     train_classe, val_classe, test_classe = computer_vision.create_labels(train_images, val_images, test_images)
@@ -51,7 +51,6 @@ def main():
 
     # Salvando os valores em disco
     def save_list(my_list, filename):
-        # the filename should mention the extension 'npy'
         np.save(filename, my_list)
         print(f"{filename} Saved successfully!")
 

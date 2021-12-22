@@ -12,8 +12,8 @@ from src import computer_vision
 MODEL_CHOICE = 'cnn'  # 'cnn' ou 'vgg'
 
 # hiperparametros gerais
-batch_size = 16
-epochs = 5
+BATCH_SIZE = 16
+EPOCHS = 20
 
 
 def main():
@@ -42,18 +42,18 @@ def main():
     start = time.time()
 
     # Treinamento do modelo
-    history_model = model.fit(train_data, train_labels, batch_size=batch_size,
-                              epochs=epochs, initial_epoch=0,
+    history_model = model.fit(train_data, train_labels, batch_size=BATCH_SIZE,
+                              epochs=EPOCHS, initial_epoch=0,
                               validation_data=(val_data, val_labels))
 
     # Marcando o tempo final
     end = time.time()
     duration = end - start
     print('\n Modelo CNN - Duração %0.2f segundos (%0.1f minutos) para treinamento de %d epocas' % (
-        duration, duration / 60, epochs))
+        duration, duration / 60, EPOCHS))
 
     # exibição dos gráficos de treinamento
-    computer_vision.plot_model(history_model.history, epochs)
+    computer_vision.plot_model(history_model.history, EPOCHS)
 
     # exibição de exemplos de predição
     computer_vision.show_predictions(model=model,
