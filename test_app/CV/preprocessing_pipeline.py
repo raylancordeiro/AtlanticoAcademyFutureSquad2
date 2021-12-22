@@ -8,7 +8,10 @@ def main():
     # definição do path do diretorio de imagens
     os.chdir(os.path.dirname(__file__))
     current_dir_path = os.getcwd()
-    data_dir = current_dir_path + '/data/data_especular_crop_3_classes'
+
+    # salvar o dataset completo dentro da pasta data e
+    # alterar o path para o dataset completo!
+    data_dir = current_dir_path + '/data/data_especular_crop_3_classes_reduzido_para_testes'
 
     # Carregamento dos dados
     images, class_names = computer_vision.load_dataset(data_dir)
